@@ -29,15 +29,6 @@ This SDK support both two way to communicate with DevIot server, http and MQ pro
 ##Prerequisite
 1.[Python2.7](https://www.python.org/downloads/):This sdk base on the Python 2.7.10
 
-2.[Flask](http://flask.pocoo.org/):This sdk use this to build a simple http server
-
-3.[paho-mqtt](https://eclipse.org/paho/clients/python/): this sdk use this to build a simple MQTT client
-
-you can use pip install flask and  paho-mqtt by follow command:
-    
-        sudo pip install flask
-        sudo pip install paho-mqtt
-
 ##How to use
 1.Put the gateway folder under root folder of your gateway project
 
