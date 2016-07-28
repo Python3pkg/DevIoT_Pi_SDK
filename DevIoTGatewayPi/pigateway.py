@@ -1,9 +1,7 @@
 __author__ = 'tingxxu'
 
 from DevIoTGateway.gateway import Gateway
-from DevIoTGateway.sensor import *
-from config import config
-from sensorlogic import SensorLogic
+from DevIoTGateway.config import config
 
 import os
 import time
@@ -28,12 +26,14 @@ class PiGateway(Gateway):
         sensors = self.get_sensors()
         while True:
             for sensor_id, sensor in sensors.iteritems():
-                if sensor.kind in self.__logic__:
-                    self.__logic__[sensor.kind].update(sensor, None)
-                elif self.default_sensor_logic is not None:
-                    self.default_sensor_logic.update(sensor, None)
-
-            time.sleep(0.2)
+                try:
+                    if sensor.kind in self.__logic__:
+                        self.__logic__[sensor.kind].update(sensor, None)
+                    elif self.default_sensor_logic is not None:
+                        self.default_sensor_logic.update(sensor, None)
+                except:
+                    pass
+                time.sleep(0.2)
 
     def __load_sensors(self):
         if "sensors" not in config:
@@ -46,20 +46,18 @@ class PiGateway(Gateway):
                 if "kind" in sensor_object:
                     sensor_object_kind = sensor_object["kind"]
                     if sensor_object_kind in self.__models__:
-                        new_sensor = SensorLogic.copy_with_info(self.__models__[sensor_object_kind],
-                                                                sensor_id, sensor_object["name"])
+                        model_sensor = self.__models__[sensor_object_kind]
+                        new_sensor = model_sensor.copy_with_info(sensor_id, sensor_object["name"])
                         if len(new_sensor.__actions__) > 0:
                             self.register_custom_sensor_with_action(new_sensor, self.__custom_action_callback)
                         else:
                             self.register_custom_sensor(new_sensor)
                     else:
-                        new_sensor = Sensor(sensor_object_kind, sensor_id, sensor_object["name"])
                         if sensor_object["type"] is "action":
                             self.register_action(sensor_object_kind, sensor_id, sensor_object["name"],
                                                  self.__default_action_callback)
                         else:
                             self.register(sensor_object_kind, sensor_id, sensor_object["name"])
-                        self.__sensors__[sensor_id] = new_sensor
                 else:
                     print("{0:s} sensor in setting.cfg lost kind property".format(sensor_id))
 
