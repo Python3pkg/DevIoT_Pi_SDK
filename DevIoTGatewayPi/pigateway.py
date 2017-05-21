@@ -25,7 +25,7 @@ class PiGateway(Gateway):
 
         sensors = self.get_sensors()
         while True:
-            for sensor_id, sensor in sensors.iteritems():
+            for sensor_id, sensor in sensors.items():
                 try:
                     if sensor.kind in self.__logic__:
                         self.__logic__[sensor.kind].update(sensor, None)
@@ -59,7 +59,7 @@ class PiGateway(Gateway):
                         else:
                             self.register(sensor_object_kind, sensor_id, sensor_object["name"])
                 else:
-                    print("{0:s} sensor in setting.cfg lost kind property".format(sensor_id))
+                    print(("{0:s} sensor in setting.cfg lost kind property".format(sensor_id)))
 
     def load_sensor_model(self, sensor, logic):
         if sensor.kind not in self.__models__:
@@ -81,9 +81,9 @@ class PiGateway(Gateway):
                 if sensor_name not in self.__models__:
                     import_sensor = "from sensors.{0:s} import {1:s}, {2:s}".format(sensor_name, sensor_name, sensor_logic)
 
-                    exec import_sensor
+                    exec(import_sensor)
                     add_sensor = "self.load_sensor_model({0:s},{1:s})".format(sensor_name, sensor_logic)
-                    exec add_sensor
+                    exec(add_sensor)
 
     def __default_action_callback(self, sensor_id, action):
         sensor = self.get_sensor(sensor_id)
